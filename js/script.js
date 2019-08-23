@@ -1,5 +1,5 @@
 $.ajax({
-  url: `http://192.168.33.10:3000/allProducts`,
+  url: `http://localHost:3000/allProducts`,
   dataType: 'json',
   type:'GET',
   success: function(data){
@@ -30,7 +30,7 @@ $("#addBtn").click(function(){
   } else {
     console.log(`${name} - $${price}`);
     $.ajax({
-      url: 'http://192.168.33.10:3000/product',
+      url: 'http://localHost:3000/product',
       type: 'POST',
       data: {
         name: name,
@@ -60,7 +60,7 @@ $("#submit").click(function(){
   } else {
     console.log(`${name}, ${email} - your message is ${message}`);
     $.ajax({
-      url: `http://192.168.33.10:3000/message`,
+      url: `http://localHost.10:3000/message`,
       type: 'POST',
       data: {
         username: username,
