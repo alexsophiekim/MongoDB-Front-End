@@ -6,6 +6,25 @@
         <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     </head>
     <body>
+      <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand mx-auto" href="#">CONTACT</a>
+      </nav>
+      <form class="container mx-auto">
+        <div class="form-group">
+          <label for="exampleFormControlInput1">Name</label>
+          <input type="text" class="form-control" id="userName" >
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlInput1">Email address</label>
+          <input type="email" class="form-control" id="email" placeholder="name@example.com">
+        </div>
+        <div class="form-group">
+          <label for="exampleFormControlTextarea1">Message</label>
+          <textarea class="form-control" id="messageArea" rows="5"></textarea>
+        </div>
+        <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
       <div class="container mx-auto">
         <h1>Product Library</h1>
         <h5>Add New Product</h5>
@@ -13,11 +32,11 @@
         <form>
           <div class="form-group">
             <label for="exampleInputEmail1">Product Name</label>
-            <input type="text" class="form-control" id="productName" aria-describedby="emailHelp" placeholder="">
+            <input type="text" class="form-control" id="productName" value="">
           </div>
           <div class="form-group">
             <label for="exampleInputPassword1">Product Price</label>
-            <input type="number" class="form-control" id="productPrice" placeholder="">
+            <input type="number" class="form-control" id="productPrice" value="">
           </div>
           <button id="addBtn" type="submit" class="btn btn-primary">Add Product</button>
         </form>
@@ -59,9 +78,15 @@
 
 =======
         <ul id="productList" class="list-group">
+<<<<<<< HEAD
 >>>>>>> 2897301ef9ba52a30b407eb0438d19d4e9f181f6
 
+=======
+>>>>>>> 36ad3ffea7305e9229cd1359dcb1868c0fb0d5bd
         </ul>
+
+
+
 
       </div>
 
