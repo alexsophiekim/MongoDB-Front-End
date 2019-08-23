@@ -50,36 +50,31 @@ $("#addBtn").click(function(){
 
 $("#submit").click(function(){
   console.log('clicked');
-  // event.preventDefault();
-  // let username = $("#userName").val();
-  // let email = $("#email").val();
-  // let message = $("#messageArea").val();
-  //
-  // if ((name.length === 0)||(email.length === 0)||(message.length === 0)) {
-  //   console.log('input correctly');
-  // } else {
-  //   console.log(`${name}, ${email} - your message is ${message}`);
-  //   $.ajax({
-  //     url: `http://192.168.33.10:3000/message`,
-  //     type: 'POST',
-  //     data: {
-  //       username: username,
-  //       email: email,
-  //       message: message
-  //     },
-  //     success: function(result){
-  //       console.log(result);
-  //     },
-  //     error: function(err){
-  //       console.log(err);
-  //       console.log('something went wrong');
-  //     }
-  //   });
-  // }
+  event.preventDefault();
+  let username = $("#userName").val();
+  let email = $("#email").val();
+  let message = $("#messageArea").val();
 
-
-
-
-
+  if ((name.length === 0)||(email.length === 0)||(message.length === 0)) {
+    console.log('input correctly');
+  } else {
+    console.log(`${name}, ${email} - your message is ${message}`);
+    $.ajax({
+      url: `http://192.168.33.10:3000/message`,
+      type: 'POST',
+      data: {
+        username: username,
+        email: email,
+        message: message
+      },
+      success: function(result){
+        console.log(result);
+      },
+      error: function(err){
+        console.log(err);
+        console.log('something went wrong');
+      }
+    });
+  }
 
 });
