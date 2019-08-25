@@ -2,12 +2,13 @@ let serverURL;
 let serverPort;
 
 $.ajax({
-  url:`config.json`,
+  url:'config.json',
   type:'GET',
   dataType:'json',
   success:function(keys){
-    serverURL = keys('SERVER_URL');
-    serverPort = keys('SERVER_PORT');
+    // console.log(keys);
+    serverURL = keys['SERVER_URL'];
+    serverPort = keys['SERVER_PORT'];
     getProductsData();
   },
   error:function(err){
@@ -33,12 +34,12 @@ getProductsData = ()=> {
         $("#productList").append(layout)
       }
     },
-    error: function(){
-      console.log('error')
-    }
+    error: function(err){
+          console.log(err);
+          console.log('something went wrong');
+      }
   });
 };
-
 
 $("#addBtn").click(function(){
   event.preventDefault();   //prevent refresh form
@@ -57,8 +58,15 @@ $("#addBtn").click(function(){
         price: price
       },
       success: function(result){
-        console.log(result);
-      },
+        $("#productName").val(null);
+        $("#productPrice").val(null);
+        $("#productList").append(`<li class="list-group-item">${name} - $${price}
+         <div class="btnSet d-flex float-right">
+           <button type="button" class="btn btn-primary btn-sm mr-1">EDIT</button>
+           <button type="button" class="btn btn-secondary btn-sm ">REMOVE</button>
+          </div>
+         </li>`);
+       },
       error: function(error){
         console.log(error);
         console.log('something went wrong with sending the data');
