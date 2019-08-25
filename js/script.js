@@ -12,11 +12,11 @@ $.ajax({
           <button type="button" class="btn btn-secondary btn-sm ">REMOVE</button>
         </div>
       </li>`
-      $("#productList").append(layout);
+      $("#productList").append(layout)
     }
   },
   error: function(){
-    console.log('error');
+    console.log('error')
   }
 });
 
@@ -44,7 +44,6 @@ $("#addBtn").click(function(){
         console.log('something went wrong with sending the data');
       }
     })
-
   }
 });
 
@@ -55,10 +54,10 @@ $("#submit").click(function(){
   let email = $("#email").val();
   let message = $("#messageArea").val();
 
-  if ((name.length === 0)||(email.length === 0)||(message.length === 0)) {
+  if ((username.length === 0)||(email.length === 0)||(message.length === 0)) {
     console.log('input correctly');
   } else {
-    console.log(`${name}, ${email} - your message is ${message}`);
+    console.log(`${username}, ${email} - your message is ${message}`);
     $.ajax({
       url: `http://localHost.10:3000/message`,
       type: 'POST',
