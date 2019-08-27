@@ -75,6 +75,13 @@ $("#addBtn").click(function(){
   }
 });
 
+
+
+
+
+
+
+
 $("#submit").click(function(){
   console.log('clicked');
   event.preventDefault();
