@@ -26,10 +26,11 @@ getProductsData = ()=> {
         // console.log(data);
         for (var i = 0; i < data.length; i++) {
           // console.log(data[i].name);
-          let layout = `<li class="list-group-item" data-id="${data[i]._id}">${data[i].name}
+          let layout = `<li class="list-group-item productItem" data-id="${data[i]._id}">
+            <span class="productName">${data[i].name}</span>
             <div class="btnSet d-flex float-right">
               <button class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
-              <button class="btn btn-secondary btn-sm ">REMOVE</button>
+              <button class="btn btn-secondary btn-sm removeBtn">REMOVE</button>
             </div>
           </li>`;
           $("#productList").append(layout)
@@ -44,7 +45,7 @@ getProductsData = ()=> {
 
 $("#productList").on('click', '.editBtn', function() {
   event.preventDefault();
-  const id =$(this).parent().parent().data('id');
+  const id = $(this).parent().parent().data('id');
   console.log(id);
   console.log('button has been clicked');
   $.ajax({
@@ -78,6 +79,7 @@ $("#addBtn").click(function(){
   } else {
     if (editing ===true) {
       const id = $("#productID").val();
+
       $.ajax({
         url: `${serverURL}:${serverPort}/editProduct/${id}`,
         type: 'PATCH',
@@ -92,6 +94,15 @@ $("#addBtn").click(function(){
           $("#addBtn").text('Add New Product').removeClass('btn-warning');
           $("#heading").text('Add New Product');
           editing = false;
+          const allProducts = $('.productItem');
+          console.log(allProducts);
+          allProducts.each(function(){
+            console.log($(this).data('id'));
+            if ($(this).data('id') === id) {
+              console.log('match');
+                $(this).find('.productName').text(name);
+            }
+          });
         },
         error: function(err) {
           console.log(err);
@@ -110,15 +121,13 @@ $("#addBtn").click(function(){
        success: function(result){
          $("#productName").val(null);
          $("#productPrice").val(null);
-         $("#productList").append(`<li class="list-group-item">${result.name}
+         $("#productList").append(`<li class="list-group-item productItem">
+         <span class="productName">${result.name}</span>
           <div class="btnSet d-flex float-right">
-            <button type="button" class="btn btn-primary btn-sm mr-1">EDIT</button>
-            <button type="button" class="btn btn-secondary btn-sm ">REMOVE</button>
+            <button type="button" class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
+            <button type="button" class="btn btn-secondary btn-sm removeBtn">REMOVE</button>
            </div>
           </li>`);
-          for (var i = 0; i < result.length; i++) {
-            result[i]
-          }
         },
        error: function(error){
          console.log(error);
@@ -129,9 +138,29 @@ $("#addBtn").click(function(){
   }
 });
 
+$("#productList").on('click','.removeBtn', function(){
+  event.preventDefault();
+  const id = $(this).parent().parent().data('id');
+  const li = $(this).parent().parent();
+  $.ajax({
+    url:`${serverURL}:${serverPort}/products/${id}`,
+    type:'DELETE',
+    success: function(result){
+      console.log('Deleted');
+      // const allProducts = $('.productName');
+      // allProducts.each(function(){
+      //   if ($(this).data('id') === id) {
+      //     $(this).remove();
+      //   }
+      // })
+      li.remove();
+    },
+    error: function(err){
+      console.log(err);
+    }
 
-
-
+  })
+});
 
 
 
