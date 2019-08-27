@@ -1,5 +1,6 @@
 let serverURL;
 let serverPort;
+let editing = false;
 
 $.ajax({
   url:'config.json',
@@ -18,28 +19,54 @@ $.ajax({
 
 getProductsData = ()=> {
   $.ajax({
-    url: `${serverURL}:${serverPort}/allProducts`,
-    dataType: 'json',
-    type:'GET',
-    success: function(data){
-      console.log(data);
-      for (var i = 0; i < data.length; i++) {
-        // console.log(data[i].name);
-        let layout = `<li class="list-group-item">${data[i].name}
-          <div class="btnSet d-flex float-right">
-            <button type="button" class="btn btn-primary btn-sm mr-1">EDIT</button>
-            <button type="button" class="btn btn-secondary btn-sm ">REMOVE</button>
-          </div>
-        </li>`
-        $("#productList").append(layout)
-      }
-    },
-    error: function(err){
-          console.log(err);
-          console.log('something went wrong');
-      }
+      url: `${serverURL}:${serverPort}/allProducts`,
+      dataType: 'json',
+      type:'GET',
+      success: function(data){
+        // console.log(data);
+        for (var i = 0; i < data.length; i++) {
+          // console.log(data[i].name);
+          let layout = `<li class="list-group-item" data-id="${data[i]._id}">${data[i].name}
+            <div class="btnSet d-flex float-right">
+              <button class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
+              <button class="btn btn-secondary btn-sm ">REMOVE</button>
+            </div>
+          </li>`;
+          $("#productList").append(layout)
+        }
+      },
+      error: function(err){
+            console.log(err);
+            console.log('something went wrong');
+        }
   });
 };
+
+$("#productList").on('click', '.editBtn', function() {
+  event.preventDefault();
+  const id =$(this).parent().parent().data('id');
+  console.log(id);
+  console.log('button has been clicked');
+  $.ajax({
+    url:`${serverURL}:${serverPort}/product/${id}`,
+    type: 'GET',
+    dataType:'json',
+    success: function(product){
+      console.log(product);
+      $("#productName").val(product['name']);
+      $("#productPrice").val(product['price']);
+      $("#productID").val(product['_id']);
+      $("#addBtn").text('Edit Product').addClass('btn-warning');
+      $("#heading").text('Edit Product');
+      editing = true;
+    },
+    error: function(){
+      console.log(err);
+      console.log('something went wrong with getting the single product');
+    }
+  })
+});
+
 
 $("#addBtn").click(function(){
   event.preventDefault();   //prevent refresh form
@@ -49,29 +76,56 @@ $("#addBtn").click(function(){
   if ((name.length === 0) || (price.length === 0)) {
     console.log('input product name and price');
   } else {
-    console.log(`${name} - $${price}`);
-    $.ajax({
-      url:  `${serverURL}:${serverPort}/product`,
-      type: 'POST',
-      data: {
-        name: name,
-        price: price
-      },
-      success: function(result){
-        $("#productName").val(null);
-        $("#productPrice").val(null);
-        $("#productList").append(`<li class="list-group-item">${name} - $${price}
-         <div class="btnSet d-flex float-right">
-           <button type="button" class="btn btn-primary btn-sm mr-1">EDIT</button>
-           <button type="button" class="btn btn-secondary btn-sm ">REMOVE</button>
-          </div>
-         </li>`);
+    if (editing ===true) {
+      const id = $("#productID").val();
+      $.ajax({
+        url: `${serverURL}:${serverPort}/editProduct/${id}`,
+        type: 'PATCH',
+        data: {
+          name: name,
+          price: price
+         },
+        success: function(result){
+          $("#productName").val(null);
+          $("#productPrice").val(null);
+          $("#productID").val(null);
+          $("#addBtn").text('Add New Product').removeClass('btn-warning');
+          $("#heading").text('Add New Product');
+          editing = false;
+        },
+        error: function(err) {
+          console.log(err);
+          console.log('something went wrong with editing the product');
+        }
+      })
+    } else {
+     console.log(`${name} - $${price}`);
+     $.ajax({
+       url:  `${serverURL}:${serverPort}/product`,
+       type: 'POST',
+       data: {
+         name: name,
+         price: price
        },
-      error: function(error){
-        console.log(error);
-        console.log('something went wrong with sending the data');
-      }
-    })
+       success: function(result){
+         $("#productName").val(null);
+         $("#productPrice").val(null);
+         $("#productList").append(`<li class="list-group-item">${result.name}
+          <div class="btnSet d-flex float-right">
+            <button type="button" class="btn btn-primary btn-sm mr-1">EDIT</button>
+            <button type="button" class="btn btn-secondary btn-sm ">REMOVE</button>
+           </div>
+          </li>`);
+          for (var i = 0; i < result.length; i++) {
+            result[i]
+          }
+        },
+       error: function(error){
+         console.log(error);
+         console.log('something went wrong with sending the data');
+       }
+     })
+   }
   }
 });
 
@@ -88,7 +142,6 @@ $("#submit").click(function(){
   let username = $("#userName").val();
   let email = $("#email").val();
   let message = $("#messageArea").val();
-
   if ((username.length === 0)||(email.length === 0)||(message.length === 0)) {
     console.log('input correctly');
   } else {
