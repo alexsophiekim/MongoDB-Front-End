@@ -193,7 +193,6 @@ $("#productList").on('click','.removeBtn', function(){
 //
 // });
 
-
 $('#loginTabBtn').click(function(){
     event.preventDefault();
     $('.nav-link').removeClass('active');
@@ -210,7 +209,6 @@ $('#registerTabBtn').click(function(){
     $('#registerForm').removeClass('d-none').show();
 });
 
-
 $('#registerForm').submit(function(){
   event.preventDefault();
   // console.log('register has been clicked');
@@ -218,7 +216,6 @@ $('#registerForm').submit(function(){
   let email = $('#rEmail').val();
   let password = $('#rPassword').val();
   let confirmPassword = $('#rConfirmPassword').val();
-
   if(username.length === 0){
         console.log('please enter a username');
     } else if(email.length === 0){
@@ -243,15 +240,51 @@ $('#registerForm').submit(function(){
             console.log(result);
           },
           error: function(err){
-            console.log(err);
-            console.log('something went wrong with registering a new user');
+              console.log(err);
+              console.log('something went wrong with registering a new user');
           }
-
-        })
+        });
     }
 });
 
+$('#loginBtn').click(function(){
+    event.preventDefault();
+    let username = $('#lUsername').val();
+    let password = $('#lPassword').val();
+    if(username.length === 0){
+      console.log('please enter a username');
+    } else if(password.length === 0){
+      console.log('please enter a password');
+    } else {
+      $.ajax({
+        url:`${url}/getUser`,
+        type: 'POST',
+        data: {
+          username:username,
+          password:password
+        },
+        success: function(result){
+          if (result === 'Invalid user') {
+              console.log('cannot find user with that username');
+          } else if (result === 'Invalid password') {
+              console.log('Your password is wrong');
+          } else {
+              console.log('lets log you in');
+              console.log(result);
+
+              sessionStorage.setItem('userID',result['_id']);
+              sessionStorage.setItem('userName', result['username']);
+              sessionStorage.setItem('userEmail', result['email']);
+          }
+        },
+        error: function(err){
+          console.log(err);
+        }
+      })
+    }
+});
 
 $(document).ready(function(){
   $('#authForm').modal('show');
+  console.log(sessionStorage);
 })
