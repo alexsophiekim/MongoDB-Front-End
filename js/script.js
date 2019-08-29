@@ -1,5 +1,6 @@
 let serverURL;
 let serverPort;
+let url;
 let editing = false;
 
 $.ajax({
@@ -10,6 +11,7 @@ $.ajax({
     // console.log(keys);
     serverURL = keys['SERVER_URL'];
     serverPort = keys['SERVER_PORT'];
+    url = `${keys['SERVER_URL']}:${keys['SERVER_PORT']}`;
     getProductsData();
   },
   error:function(err){
@@ -143,7 +145,7 @@ $("#productList").on('click','.removeBtn', function(){
   const id = $(this).parent().parent().data('id');
   const li = $(this).parent().parent();
   $.ajax({
-    url:`${serverURL}:${serverPort}/products/${id}`,
+    url:`${url}/products/${id}`,
     type:'DELETE',
     success: function(result){
       console.log('Deleted');
@@ -158,39 +160,98 @@ $("#productList").on('click','.removeBtn', function(){
     error: function(err){
       console.log(err);
     }
-
   })
 });
 
+// $("#submit").click(function(){
+//   console.log('clicked');
+//   event.preventDefault();
+//   let username = $("#userName").val();
+//   let email = $("#email").val();
+//   let message = $("#messageArea").val();
+//   if ((username.length === 0)||(email.length === 0)||(message.length === 0)) {
+//     console.log('input correctly');
+//   } else {
+//     console.log(`${username}, ${email} - your message is ${message}`);
+//     $.ajax({
+//       url: `${serverURL}:${serverPort}/message`,
+//       type: 'POST',
+//       data: {
+//         username: username,
+//         email: email,
+//         message: message
+//       },
+//       success: function(result){
+//         console.log(result);
+//       },
+//       error: function(err){
+//         console.log(err);
+//         console.log('something went wrong');
+//       }
+//     });
+//   }
+//
+// });
 
 
-
-$("#submit").click(function(){
-  console.log('clicked');
-  event.preventDefault();
-  let username = $("#userName").val();
-  let email = $("#email").val();
-  let message = $("#messageArea").val();
-  if ((username.length === 0)||(email.length === 0)||(message.length === 0)) {
-    console.log('input correctly');
-  } else {
-    console.log(`${username}, ${email} - your message is ${message}`);
-    $.ajax({
-      url: `${serverURL}:${serverPort}/message`,
-      type: 'POST',
-      data: {
-        username: username,
-        email: email,
-        message: message
-      },
-      success: function(result){
-        console.log(result);
-      },
-      error: function(err){
-        console.log(err);
-        console.log('something went wrong');
-      }
-    });
-  }
-
+$('#loginTabBtn').click(function(){
+    event.preventDefault();
+    $('.nav-link').removeClass('active');
+    $(this).addClass('active');
+    $('#loginForm').show();
+    $('#registerForm').hide();
 });
+
+$('#registerTabBtn').click(function(){
+    event.preventDefault();
+    $('.nav-link').removeClass('active');
+    $(this).addClass('active');
+    $('#loginForm').hide();
+    $('#registerForm').removeClass('d-none').show();
+});
+
+
+$('#registerForm').submit(function(){
+  event.preventDefault();
+  // console.log('register has been clicked');
+  let username = $('#rUsername').val();
+  let email = $('#rEmail').val();
+  let password = $('#rPassword').val();
+  let confirmPassword = $('#rConfirmPassword').val();
+
+  if(username.length === 0){
+        console.log('please enter a username');
+    } else if(email.length === 0){
+        console.log('please enter an email');
+    } else if(password.length === 0){
+        console.log('please enter a password');
+    } else if(confirmPassword.length === 0){
+        console.log('please confirm your password');
+    } else if(password !== confirmPassword){
+        console.log('your passwords do not match');
+    } else {
+        // console.log('you are good to go');
+        $.ajax({
+          url: `${url}/users`,
+          type: 'POST',
+          data:{
+            username: username,
+            email:email,
+            password:password
+          },
+          success:function(result){
+            console.log(result);
+          },
+          error: function(err){
+            console.log(err);
+            console.log('something went wrong with registering a new user');
+          }
+
+        })
+    }
+});
+
+
+$(document).ready(function(){
+  $('#authForm').modal('show');
+})
