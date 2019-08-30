@@ -21,7 +21,7 @@ $.ajax({
 
 getProductsData = ()=> {
   $.ajax({
-      url: `${serverURL}:${serverPort}/allProducts`,
+      url: `${url}/allProducts`,
       dataType: 'json',
       type:'GET',
       success: function(data){
@@ -272,6 +272,7 @@ $('#loginBtn').click(function(){
               console.log('lets log you in');
               console.log(result);
 
+
               sessionStorage.setItem('userID',result['_id']);
               sessionStorage.setItem('userName', result['username']);
               sessionStorage.setItem('userEmail', result['email']);
@@ -283,6 +284,8 @@ $('#loginBtn').click(function(){
       })
     }
 });
+
+
 
 $(document).ready(function(){
   $('#authForm').modal('show');
