@@ -271,10 +271,10 @@ $('#loginBtn').click(function(){
           } else {
               console.log('lets log you in');
               console.log(result);
-
               sessionStorage.setItem('userID',result['_id']);
               sessionStorage.setItem('userName', result['username']);
               sessionStorage.setItem('userEmail', result['email']);
+              
           }
         },
         error: function(err){
