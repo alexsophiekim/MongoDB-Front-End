@@ -235,11 +235,7 @@ $('#loginForm').submit(function(){
           } else {
               console.log('lets log you in');
               console.log(result);
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 4f2e0f1e0483c7698cfecc152670c26ce4f09125
               sessionStorage.setItem('userID',result['_id']);
               sessionStorage.setItem('userName', result['username']);
               sessionStorage.setItem('userEmail', result['email']);
@@ -258,7 +254,6 @@ $('#loginForm').submit(function(){
     }
 });
 
-<<<<<<< HEAD
 $('#logOutBtn').click(function(){
   sessionStorage.clear();
   getProductsData();
@@ -266,10 +261,6 @@ $('#logOutBtn').click(function(){
   $('#logOutBtn').addClass('d-none');
   $('#addProductSection').addClass('d-none');
 });
-=======
-
->>>>>>> 4f2e0f1e0483c7698cfecc152670c26ce4f09125
-
 $(document).ready(function(){
   // $('#authForm').modal('show');
   if (sessionStorage['userName']) {
