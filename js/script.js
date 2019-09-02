@@ -26,15 +26,18 @@ getProductsData = ()=> {
       type:'GET',
       success: function(data){
         // console.log(data);
+        $('#productList').empty();
         for (var i = 0; i < data.length; i++) {
           // console.log(data[i].name);
           let layout = `<li class="list-group-item productItem" data-id="${data[i]._id}">
-            <span class="productName">${data[i].name}</span>
-            <div class="btnSet d-flex float-right">
-              <button class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
-              <button class="btn btn-secondary btn-sm removeBtn">REMOVE</button>
-            </div>
-          </li>`;
+            <span class="productName">${data[i].name}</span>`
+            if (sessionStorage['userName']) {
+              layout += `<div class="btnSet d-flex float-right">
+                          <button class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
+                          <button class="btn btn-secondary btn-sm removeBtn">REMOVE</button>
+                        </div>`
+            }
+              layout += `</li>`;
           $("#productList").append(layout)
         }
       },
@@ -45,43 +48,15 @@ getProductsData = ()=> {
   });
 };
 
-$("#productList").on('click', '.editBtn', function() {
-  event.preventDefault();
-  const id = $(this).parent().parent().data('id');
-  console.log(id);
-  console.log('button has been clicked');
-  $.ajax({
-    url:`${serverURL}:${serverPort}/product/${id}`,
-    type: 'GET',
-    dataType:'json',
-    success: function(product){
-      console.log(product);
-      $("#productName").val(product['name']);
-      $("#productPrice").val(product['price']);
-      $("#productID").val(product['_id']);
-      $("#addBtn").text('Edit Product').addClass('btn-warning');
-      $("#heading").text('Edit Product');
-      editing = true;
-    },
-    error: function(){
-      console.log(err);
-      console.log('something went wrong with getting the single product');
-    }
-  })
-});
-
-
 $("#addBtn").click(function(){
   event.preventDefault();   //prevent refresh form
   let name = $("#productName").val();
   let price = $("#productPrice").val();
-
   if ((name.length === 0) || (price.length === 0)) {
     console.log('input product name and price');
   } else {
     if (editing ===true) {
       const id = $("#productID").val();
-
       $.ajax({
         url: `${serverURL}:${serverPort}/editProduct/${id}`,
         type: 'PATCH',
@@ -140,6 +115,31 @@ $("#addBtn").click(function(){
   }
 });
 
+$("#productList").on('click', '.editBtn', function() {
+  event.preventDefault();
+  const id = $(this).parent().parent().data('id');
+  console.log(id);
+  console.log('button has been clicked');
+  $.ajax({
+    url:`${serverURL}:${serverPort}/product/${id}`,
+    type: 'GET',
+    dataType:'json',
+    success: function(product){
+      console.log(product);
+      $("#productName").val(product['name']);
+      $("#productPrice").val(product['price']);
+      $("#productID").val(product['_id']);
+      $("#addBtn").text('Edit Product').addClass('btn-warning');
+      $("#heading").text('Edit Product');
+      editing = true;
+    },
+    error: function(){
+      console.log(err);
+      console.log('something went wrong with getting the single product');
+    }
+  })
+});
+
 $("#productList").on('click','.removeBtn', function(){
   event.preventDefault();
   const id = $(this).parent().parent().data('id');
@@ -149,12 +149,6 @@ $("#productList").on('click','.removeBtn', function(){
     type:'DELETE',
     success: function(result){
       console.log('Deleted');
-      // const allProducts = $('.productName');
-      // allProducts.each(function(){
-      //   if ($(this).data('id') === id) {
-      //     $(this).remove();
-      //   }
-      // })
       li.remove();
     },
     error: function(err){
@@ -162,36 +156,6 @@ $("#productList").on('click','.removeBtn', function(){
     }
   })
 });
-
-// $("#submit").click(function(){
-//   console.log('clicked');
-//   event.preventDefault();
-//   let username = $("#userName").val();
-//   let email = $("#email").val();
-//   let message = $("#messageArea").val();
-//   if ((username.length === 0)||(email.length === 0)||(message.length === 0)) {
-//     console.log('input correctly');
-//   } else {
-//     console.log(`${username}, ${email} - your message is ${message}`);
-//     $.ajax({
-//       url: `${serverURL}:${serverPort}/message`,
-//       type: 'POST',
-//       data: {
-//         username: username,
-//         email: email,
-//         message: message
-//       },
-//       success: function(result){
-//         console.log(result);
-//       },
-//       error: function(err){
-//         console.log(err);
-//         console.log('something went wrong');
-//       }
-//     });
-//   }
-//
-// });
 
 $('#loginTabBtn').click(function(){
     event.preventDefault();
@@ -247,7 +211,7 @@ $('#registerForm').submit(function(){
     }
 });
 
-$('#loginBtn').click(function(){
+$('#loginForm').submit(function(){
     event.preventDefault();
     let username = $('#lUsername').val();
     let password = $('#lPassword').val();
@@ -274,17 +238,38 @@ $('#loginBtn').click(function(){
               sessionStorage.setItem('userID',result['_id']);
               sessionStorage.setItem('userName', result['username']);
               sessionStorage.setItem('userEmail', result['email']);
-              
+              getProductsData();
+              $('#authForm').modal('hide');
+              $('#loginBtn').hide();
+              $('#logOutBtn').removeClass('d-none');
+              $('#addProductSection').removeClass('d-none');
           }
         },
         error: function(err){
           console.log(err);
+          console.log('something went wrong');
         }
       })
     }
 });
 
+$('#logOutBtn').click(function(){
+  sessionStorage.clear();
+  getProductsData();
+  $('#loginBtn').show();
+  $('#logOutBtn').addClass('d-none');
+  $('#addProductSection').addClass('d-none');
+});
+
 $(document).ready(function(){
-  $('#authForm').modal('show');
+  // $('#authForm').modal('show');
+  if (sessionStorage['userName']) {
+    console.log('you are logged in');
+    $('#loginBtn').hide();
+    $('#logOutBtn').removeClass('d-none');
+    $('#addProductSection').removeClass('d-none');
+  } else {
+    console.log('please sign in');
+  }
   console.log(sessionStorage);
 })
