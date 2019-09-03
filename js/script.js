@@ -3,6 +3,20 @@ let serverPort;
 let url;
 let editing = false;
 
+$(document).ready(function(){
+  // $('#authForm').modal('show');
+  if (sessionStorage['userName']) {
+    console.log('you are logged in');
+    $('#loginBtn').hide();
+    $('#logOutBtn').removeClass('d-none');
+    $('#addProductSection').removeClass('d-none');
+  } else {
+    console.log('please sign in');
+  }
+  console.log(sessionStorage);
+})
+
+
 $.ajax({
   url:'config.json',
   type:'GET',
@@ -32,10 +46,12 @@ getProductsData = ()=> {
           let layout = `<li class="list-group-item productItem" data-id="${data[i]._id}">
             <span class="productName">${data[i].name}</span>`
             if (sessionStorage['userName']) {
-              layout += `<div class="btnSet d-flex float-right">
-                          <button class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
-                          <button class="btn btn-secondary btn-sm removeBtn">REMOVE</button>
-                        </div>`
+              // if (sessionStorage['userID'] === data[i].user_id) {
+                layout += `<div class="btnSet d-flex float-right">
+                            <button class="btn btn-primary btn-sm mr-1 editBtn">EDIT</button>
+                            <button class="btn btn-secondary btn-sm removeBtn">REMOVE</button>
+                          </div>`
+              // }
             }
               layout += `</li>`;
           $("#productList").append(layout)
@@ -50,6 +66,10 @@ getProductsData = ()=> {
 
 $("#addBtn").click(function(){
   event.preventDefault();   //prevent refresh form
+  if (!sessionStorage['userID']) {
+      alert('401, permission denied');
+      return;
+  }
   let name = $("#productName").val();
   let price = $("#productPrice").val();
   if ((name.length === 0) || (price.length === 0)) {
@@ -62,9 +82,11 @@ $("#addBtn").click(function(){
         type: 'PATCH',
         data: {
           name: name,
-          price: price
+          price: price,
+          userId: sessionStorage['userID']
          },
         success: function(result){
+          console.log(result);
           $("#productName").val(null);
           $("#productPrice").val(null);
           $("#productID").val(null);
@@ -93,7 +115,8 @@ $("#addBtn").click(function(){
        type: 'POST',
        data: {
          name: name,
-         price: price
+         price: price,
+         userId: sessionStorage['userID']
        },
        success: function(result){
          $("#productName").val(null);
@@ -117,12 +140,19 @@ $("#addBtn").click(function(){
 
 $("#productList").on('click', '.editBtn', function() {
   event.preventDefault();
+  if (!sessionStorage['userID']) {
+      alert('401, permission denied');
+      return;
+  }
   const id = $(this).parent().parent().data('id');
   console.log(id);
   console.log('button has been clicked');
   $.ajax({
     url:`${serverURL}:${serverPort}/product/${id}`,
-    type: 'GET',
+    type: 'POST',
+    data: {
+        userId: sessionStorage['userID']
+    },
     dataType:'json',
     success: function(product){
       console.log(product);
@@ -133,7 +163,7 @@ $("#productList").on('click', '.editBtn', function() {
       $("#heading").text('Edit Product');
       editing = true;
     },
-    error: function(){
+    error: function(err){
       console.log(err);
       console.log('something went wrong with getting the single product');
     }
@@ -142,6 +172,10 @@ $("#productList").on('click', '.editBtn', function() {
 
 $("#productList").on('click','.removeBtn', function(){
   event.preventDefault();
+  if (!sessionStorage['userID']) {
+      alert('401, permission denied');
+      return;
+  }
   const id = $(this).parent().parent().data('id');
   const li = $(this).parent().parent();
   $.ajax({
@@ -175,7 +209,10 @@ $('#registerTabBtn').click(function(){
 
 $('#registerForm').submit(function(){
   event.preventDefault();
-  // console.log('register has been clicked');
+  if (!sessionStorage['userID']) {
+      alert('401, permission denied');
+      return;
+  }
   let username = $('#rUsername').val();
   let email = $('#rEmail').val();
   let password = $('#rPassword').val();
@@ -213,6 +250,7 @@ $('#registerForm').submit(function(){
 
 $('#loginForm').submit(function(){
     event.preventDefault();
+
     let username = $('#lUsername').val();
     let password = $('#lPassword').val();
     if(username.length === 0){
@@ -255,21 +293,13 @@ $('#loginForm').submit(function(){
 });
 
 $('#logOutBtn').click(function(){
+  if (!sessionStorage['userID']) {
+      alert('401, permission denied');
+      return;
+  }
   sessionStorage.clear();
   getProductsData();
   $('#loginBtn').show();
   $('#logOutBtn').addClass('d-none');
   $('#addProductSection').addClass('d-none');
 });
-$(document).ready(function(){
-  // $('#authForm').modal('show');
-  if (sessionStorage['userName']) {
-    console.log('you are logged in');
-    $('#loginBtn').hide();
-    $('#logOutBtn').removeClass('d-none');
-    $('#addProductSection').removeClass('d-none');
-  } else {
-    console.log('please sign in');
-  }
-  console.log(sessionStorage);
-})
